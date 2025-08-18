@@ -1,0 +1,13 @@
+{
+  "name": "siteorigin-tests-common",
+  "version": "1.0.0",
+  "description": "Common utilities and helpers for SiteOrigin test automation.",
+  "author": "SiteOrigin",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "@playwright/test": "^1.54.1",
+    "@types/node": "^24.0.14",
+    "@wordpress/e2e-test-utils-playwright": "^1.27.0",
+    "dotenv": "^17.2.0"
+  }
+}
