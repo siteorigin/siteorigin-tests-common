@@ -10,13 +10,12 @@
  * @module runTests
  */
 
-const {
-	exec,
-	execSync,
-	spawnSync,
-} = require( 'child_process' );
-const dotenv = require( 'dotenv' );
-const path = require( 'path' );
+const { execSync } = require('child_process');
+const path = require('path');
+const dotenv = require('dotenv');
+
+const envPath = path.resolve( process.cwd(), 'tests', 'so-tests.env' );
+dotenv.config( { path: envPath } );
 
 const isWindows = process.platform === 'win32';
 
@@ -24,11 +23,6 @@ const isWindows = process.platform === 'win32';
 if ( isWindows && ! process.env.PATH.includes( 'C:\\WINDOWS\\system32' ) ) {
 	process.env.PATH = `${ process.env.PATH };C:\\WINDOWS\\system32`;
 }
-
-const pluginSourceDir = path.resolve( __dirname, '../../' );
-
-// Load environment variables from so-tests.env.
-dotenv.config( { path: path.resolve( pluginSourceDir, 'so-tests.env' ) } );
 
 // Ensure required environment variables are present.
 if (
