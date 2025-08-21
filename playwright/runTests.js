@@ -55,16 +55,16 @@ const highestNodeVersionInstalled = execSync( 'nvm ls' ).toString().split( '\n' 
 		return patchB - patchA;
 	} )[ 0 ];
 
+let shellCmd;
 // Switch to the highest Node version if not already active.
 if ( currentNodeVersion !== highestNodeVersionInstalled ) {
-	execSync( `nvm use ${ highestNodeVersionInstalled }`, { stdio: 'inherit', shell: isWindows ? 'cmd.exe' : '/bin/sh' } );
+	shellCmd = `nvm use ${ highestNodeVersionInstalled } && `;
+	console.log( `Switching to Node ${ highestNodeVersionInstalled }` );
 }
 
-// Run Playwright tests.
-spawnSync( 'npx', [ 'npm', 'run', 'test:e2e' ], {
-	stdio: 'inherit',
-	shell: isWindows ? 'cmd.exe' : '/bin/sh'
-} );
+shellCmd += `npx npm run test:e2e`;
+
+execSync( shellCmd, { stdio: 'inherit', shell: isWindows ? 'cmd.exe' : '/bin/sh' } );
 
 // Restore build script Node version if needed.
 if ( currentNodeVersion !== '10.18.1' ) {
