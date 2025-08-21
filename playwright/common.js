@@ -143,6 +143,31 @@ const initializeAdmin = async ( page ) => {
 };
 
 /**
+ * Closes a modal dialog in the Site Editor if it exists.
+ *
+ * This function checks for the presence of a modal dialog with the specified class
+ * and attempts to close it by clicking the close button. If the modal has multiple
+ * steps, it clicks the close button again to ensure it is fully dismissed.
+ *
+ * @async
+ * @param {import('@playwright/test').Page} page - The Playwright page object.
+ * @param {string} modalClass - The CSS class of the modal to locate.
+ * @returns {Promise<void>} Resolves when the modal is closed or if no modal is found.
+ */
+const maybeCloseSiteEditorModal = async ( page, modalClass ) => {
+	const modal = page.locator( modalClass );
+	if ( await modal.count() > 0 ) {
+		const closeButton = modal.locator( 'button' );
+		await closeButton.isVisible();
+		await closeButton.click();
+		// Sometimes the modal has two steps.
+		if ( await closeButton.isVisible() ) {
+			await closeButton.click();
+		}
+	}
+};
+
+/**
  * Inserts a block into the Site Editor and returns its widget container.
  *
  * This function:
