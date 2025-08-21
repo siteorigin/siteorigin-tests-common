@@ -168,6 +168,26 @@ const maybeCloseSiteEditorModal = async ( page, modalClass ) => {
 };
 
 /**
+ * Opens the Site Editor canvas and dismisses the onboarding guide if present.
+ *
+ * This is a faster alternative to admin.visitSiteEditor() as it skips the initial
+ * site editor load by navigating directly to the Site Editor canvas.
+ *
+ * This function also dismisses the onboarding guide modal.
+ *
+ * @async
+ * @param {import('@playwright/test').Page} page - Playwright Page instance.
+ * @param {import('@wordpress/e2e-test-utils-playwright').Admin} admin - Initialized Admin instance (used for editor.canvas).
+ * @returns {Promise<void>} Resolves once the editor is ready and the guide (if any) has been dismissed.
+ */
+const openSiteEditorCanvas = async ( page, admin ) => {
+	await page.goto( '/wp-admin/site-editor.php?p=%2F&canvas=edit' );
+	await admin.editor.canvas.locator( 'body' ).waitFor( { timeout: 20000 } );
+
+	await maybeCloseSiteEditorModal( page, '.edit-site-welcome-guide' );
+};
+
+/**
  * Inserts a block into the Site Editor and returns its widget container.
  *
  * This function:
