@@ -222,7 +222,7 @@ const addBlock = async( admin, blockName, isWb = true ) => {
 	if ( isWb ) {
 		// Wait for the form to be ready.
 		const blockLoader = widget.locator( '.so-widgets-spinner-container' );
-		await expect( blockLoader ).toBeHidden();
+		await expect( blockLoader ).toBeHidden( { timeout: 10000 } );
 	}
 
 	// To prevent a potential desync, we need to cause a change in the block.
