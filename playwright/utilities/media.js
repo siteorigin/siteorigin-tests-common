@@ -1,3 +1,5 @@
+const path = require( 'path' );
+
 /**
  * Gets the media library modal element.
  *
@@ -39,7 +41,8 @@ const uploadImageToMediaLibrary = async ( admin ) => {
 
 	// Upload an image to the media library.
 	const fileInput = mediaModal.locator( 'input[type="file"]' );
-	await fileInput.setInputFiles( 'tests/inc/assets/test-image.png' );
+	const testImagePath = path.resolve(__dirname, 'assets/test-image.png');
+	await fileInput.setInputFiles( testImagePath );
 
 	// Wait for the upload to finish by detecting the uploaded image in the media library grid.
 	const uploadedImage = mediaModal.locator( '.attachments .attachment' ).first();
