@@ -8,7 +8,7 @@
  * @param {string} [view='media'] - The view to open ('media' or 'upload').
  * @returns {Promise<Locator>} The Playwright locator for the media modal.
  */
-export const getMediaLibraryModal = async( admin, view = 'media' ) => {
+const getMediaLibraryModal = async( admin, view = 'media' ) => {
 	const mediaModal = admin.page.locator( '.media-modal' );
 	await expect( mediaModal ).toBeVisible();
 
@@ -34,7 +34,7 @@ export const getMediaLibraryModal = async( admin, view = 'media' ) => {
  * @param {Admin} admin - The initialized Admin instance.
  * @returns {Promise<void>} Resolves when the image is uploaded and inserted.
  */
-export const uploadImageToMediaLibrary = async ( admin ) => {
+const uploadImageToMediaLibrary = async ( admin ) => {
 	const mediaModal = await getMediaLibraryModal( admin, 'upload' );
 
 	// Upload an image to the media library.
@@ -53,4 +53,9 @@ export const uploadImageToMediaLibrary = async ( admin ) => {
 	await expect( insertionButton ).toBeVisible();
 	await expect( insertionButton ).toBeEnabled();
 	await insertionButton.click( { force: true } );
+};
+
+module.exports = {
+	getMediaLibraryModal,
+	uploadImageToMediaLibrary
 };

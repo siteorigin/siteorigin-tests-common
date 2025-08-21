@@ -1,14 +1,15 @@
-import {
+const {
 	expect,
-	request,
-} from '@playwright/test';
+	request
+} = require( '@playwright/test' );
 
-import {
+const {
 	Admin,
 	RequestUtils,
 	PageUtils,
-	Editor,
-} from '@wordpress/e2e-test-utils-playwright';
+	Editor
+} = require( '@wordpress/e2e-test-utils-playwright' );
+
 
 /**
  * Retrieves the Playwright configuration, importing it if necessary.
@@ -32,7 +33,7 @@ const maybeGetConfig = async ( config ) => {
  * @returns {Promise<RequestUtils>} The initialized RequestUtils instance.
  * @throws {Error} If the baseURL is invalid or missing.
  */
-export const setupRequestUtils = async ( config = {} ) => {
+const setupRequestUtils = async ( config = {} ) => {
 	config = await maybeGetConfig( config );
 
 	const {
@@ -93,7 +94,7 @@ const stopRequest = async ( page ) => {
  * @returns {Promise<boolean>} Resolves to true if login is successful.
  * @throws {Error} If login fails or user type is invalid.
  */
-export const doLogin = async ( page, type = 'admin' ) => {
+const doLogin = async ( page, type = 'admin' ) => {
 	const username = type === 'admin' ? process.env.WP_USERNAME : type;
 	const password = process.env.WP_PASSWORD;
 
@@ -130,7 +131,7 @@ export const doLogin = async ( page, type = 'admin' ) => {
  * @param {Object} page The Playwright page object.
  * @returns {Promise<Admin>} The initialized Admin instance.
  */
-export const initializeAdmin = async ( page ) => {
+const initializeAdmin = async ( page ) => {
 	const pageUtils = new PageUtils( { page } );
 	const editor = new Editor( { page, pageUtils } );
 
@@ -157,7 +158,7 @@ export const initializeAdmin = async ( page ) => {
  * @param {boolean} [isWb=true] - Whether the block is a Widgets Bundle block.
  * @returns {Promise<Locator>} The Playwright locator for the widget container.
  */
-export const addBlock = async( admin, blockName, isWb = true ) => {
+const addBlock = async( admin, blockName, isWb = true ) => {
 	await admin.editor.insertBlock( { name: blockName } );
 	await admin.page.waitForTimeout( 1000 );
 
@@ -212,7 +213,7 @@ export const addBlock = async( admin, blockName, isWb = true ) => {
  *
  * @returns {Promise<void>} Resolves when the dialog has been handled.
  */
-export const handleDialog = ( page, action = 'accept', callback ) => {
+const handleDialog = ( page, action = 'accept', callback ) => {
 	return new Promise( ( resolve ) => {
 		page.once( 'dialog', async ( dialog ) => {
 			if ( action === 'accept' ) {
@@ -245,7 +246,7 @@ export const handleDialog = ( page, action = 'accept', callback ) => {
  *
  * @returns {Promise<void>} Resolves when the request finishes successfully.
  */
-export const waitForRequestToFinish = async( page, action, timeout = 15000 ) => {
+const waitForRequestToFinish = async( page, action, timeout = 15000 ) => {
 	try {
 		await page.waitForResponse(
 			( response ) => response.url().includes( action ) && response.status() === 200,
@@ -254,4 +255,14 @@ export const waitForRequestToFinish = async( page, action, timeout = 15000 ) => 
 	} catch ( error ) {
 		throw new Error( `Request to ${ action } did not complete within ${ timeout }ms` );
 	}
+};
+
+module.exports = {
+	addBlock,
+	doLogin,
+	handleDialog,
+	initializeAdmin,
+	openSiteEditorCanvas,
+	setupRequestUtils,
+	waitForRequestToFinish,
 };

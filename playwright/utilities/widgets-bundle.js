@@ -10,7 +10,7 @@
  * @param {boolean} [initCheck=true] - Whether to check for the 'data-initialized' attribute.
  * @returns {Promise<Locator>} The Playwright locator for the requested field.
  */
-export const getField = async ( widget, fieldName, initCheck = true ) => {
+const getField = async ( widget, fieldName, initCheck = true ) => {
 	const field = widget.locator( `.siteorigin-widget-field-type-${ fieldName }` );
 
 	await expect( field ).toBeVisible();
@@ -34,7 +34,7 @@ export const getField = async ( widget, fieldName, initCheck = true ) => {
  * @param {'edit'|'preview'} [mode='edit'] - The mode to switch to.
  * @returns {Promise<boolean|void>} Returns false if the button is not found, otherwise void.
  */
-export const switchWidgetMode = async( admin, widget, mode = 'edit' ) => {
+const switchWidgetMode = async( admin, widget, mode = 'edit' ) => {
 	const buttonText = mode === 'edit' ? 'Edit widget.' : 'Preview widget.';
 
 	await admin.editor.showBlockToolbar( widget );
@@ -49,4 +49,9 @@ export const switchWidgetMode = async( admin, widget, mode = 'edit' ) => {
 	await expect( toolbarButton ).toBeEnabled();
 
 	await admin.editor.clickBlockToolbarButton( buttonText );
+};
+
+module.exports = {
+	getField,
+	switchWidgetMode
 };

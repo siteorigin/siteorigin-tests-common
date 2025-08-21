@@ -4,9 +4,9 @@
  * Ensures required directories and files exist, and resets the test environment.
  */
 
-import { setupRequestUtils } from './common';
-import fs from 'fs';
-import path from 'path';
+const { setupRequestUtils } = require('./common.js');
+const fs = require('fs');
+const path = require('path');
 
 /**
  * Ensures required storage and results directories exist for Playwright tests.
@@ -128,4 +128,4 @@ const globalSetup = async ( config ) => {
 	await requestUtils.request.dispose();
 };
 
-export default globalSetup;
+module.exports = globalSetup;
