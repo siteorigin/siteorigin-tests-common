@@ -1,3 +1,5 @@
+const { expect } = require( '@playwright/test' );
+
 /**
  * Gets a widget field by type and ensures it is visible and initialized.
  *
