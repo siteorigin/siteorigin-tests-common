@@ -14,23 +14,22 @@ const path = require('path');
  * @returns {Promise<void>} Resolves when all required directories and files are ensured.
  */
 const setupEnvironment = async () => {
-	// Ensure storageState.json exists; if not, create it with the correct structure.
-	const storageStatePath = path.resolve( __dirname, '../cache', 'storageState.json' );
+	const storageStatePath = path.resolve( process.cwd(), 'tests/cache', 'storageState.json' );
 	fs.mkdirSync( path.dirname( storageStatePath ), { recursive: true } );
 	if ( ! fs.existsSync( storageStatePath ) ) {
 		fs.writeFileSync( storageStatePath, '{"cookies":[],"origins":[]}' );
 	}
 
 	// Create results directory, and screenshots and reports subdirectories.
-	const resultsDir = path.resolve( __dirname, '../results' );
+	const resultsDir = path.resolve( process.cwd(), 'tests/results' );
 	if ( ! fs.existsSync( resultsDir ) ) {
 		fs.mkdirSync( resultsDir, { recursive: true } );
 	}
-	const screenshotsDir = path.resolve( resultsDir, 'screenshots' );
+	const screenshotsDir = path.resolve( resultsDir, 'tests/screenshots' );
 	if ( ! fs.existsSync( screenshotsDir ) ) {
 		fs.mkdirSync( screenshotsDir, { recursive: true } );
 	}
-	const reportsDir = path.resolve( resultsDir, 'report' );
+	const reportsDir = path.resolve( resultsDir, 'tests/reportst' );
 	if ( ! fs.existsSync( reportsDir ) ) {
 		fs.mkdirSync( reportsDir, { recursive: true } );
 	}
