@@ -1,0 +1,6 @@
+WP_BASE_URL=https://tests.test/
+WP_USERNAME=admin
+WP_PASSWORD=password
+
+## If you want to ensure the site is "refreshed" before any tests are run, uncomment the following line:
+# clear_env=true
