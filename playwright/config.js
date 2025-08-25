@@ -25,6 +25,7 @@ dotenv.config( { path: envPath } );
 
 const config = defineConfig( {
 	testDir: './tests/e2e',
+	outputDir: path.join( envDir, 'results', 'report' ),
 	testResultsDir: path.join( envDir, 'results', 'report' ),
 	fullyParallel: true,
 	forbidOnly: !! process.env.CI,
@@ -42,7 +43,6 @@ const config = defineConfig( {
 		ignoreHTTPSErrors: true,
 		headless: true,
 		actionTimeout: 10_000, // 10 seconds.
-		outputDir: path.join( envDir, 'results', 'report' ),
 
 		// Logging.
 		trace: 'retain-on-failure',
@@ -62,6 +62,7 @@ const config = defineConfig( {
 			strictSelectors: true,
 		},
 	},
+
 	projects: [
 		{
 			name: 'Google Chrome',
