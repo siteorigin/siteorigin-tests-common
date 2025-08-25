@@ -29,7 +29,7 @@ const setupEnvironment = async () => {
 	if ( ! fs.existsSync( screenshotsDir ) ) {
 		fs.mkdirSync( screenshotsDir, { recursive: true } );
 	}
-	const reportsDir = path.resolve( resultsDir, 'tests/reportst' );
+	const reportsDir = path.resolve( resultsDir, 'tests/reports' );
 	if ( ! fs.existsSync( reportsDir ) ) {
 		fs.mkdirSync( reportsDir, { recursive: true } );
 	}
