@@ -81,6 +81,31 @@ const stopRequest = async ( page ) => {
 }
 
 /**
+ * Navigates to a URL relative to the WordPress base URL.
+ * Ensures no double slashes in the final URL.
+ *
+ * @param {import('@playwright/test').Page} page - Playwright page object.
+ * @param {string} url - Relative URL to navigate to.
+ *
+ * @returns {Promise<void>} Resolves when navigation completes.
+ */
+const soGoTo = async ( page, url ) => {
+	let siteURL = `${ process.env.WP_BASE_URL }`;
+
+	// Ensure siteURL ends with a single slash.
+	if ( ! siteURL.endsWith( '/' ) ) {
+		siteURL += '/';
+	}
+
+	// Remove leading slash from url if it exists.
+	if ( url.startsWith( '/' ) ) {
+		url = url.substring( 1 );
+	}
+
+	await page.goto( siteURL + url );
+};
+
+/**
  * Logs in to WordPress as a specified user type using e2e test utilities.
  *
  * This function performs a manual login through the WordPress login page
@@ -98,7 +123,8 @@ const doLogin = async ( page, type = 'admin' ) => {
 	const username = type === 'admin' ? process.env.WP_USERNAME : type;
 	const password = process.env.WP_PASSWORD;
 
-	await page.goto( '/wp-login.php' );
+	await soGoTo( page, 'wp-login.php' );
+
 	await page.waitForSelector( '#user_login', { timeout: 10000 } );
 	await page.fill( '#user_login', username );
 	await page.fill( '#user_pass', password );
@@ -181,7 +207,7 @@ const maybeCloseSiteEditorModal = async ( page, modalClass ) => {
  * @returns {Promise<void>} Resolves once the editor is ready and the guide (if any) has been dismissed.
  */
 const openSiteEditorCanvas = async ( page, admin ) => {
-	await page.goto( '/wp-admin/site-editor.php?p=%2F&canvas=edit' );
+	await soGoTo( page, 'wp-admin/site-editor.php?p=%2F&canvas=edit' );
 	await admin.editor.canvas.locator( 'body' ).waitFor( { timeout: 20000 } );
 
 	await maybeCloseSiteEditorModal( page, '.edit-site-welcome-guide' );
@@ -309,5 +335,6 @@ module.exports = {
 	initializeAdmin,
 	openSiteEditorCanvas,
 	setupRequestUtils,
+	soGoTo,
 	waitForRequestToFinish,
 };
