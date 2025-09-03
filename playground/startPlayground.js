@@ -2,21 +2,27 @@ const { parseOptionsAndRunCLI } = require( '@wp-playground/cli' );
 const { getBuildDirectory } = require( '../utilities/builds' );
 
 /**
- * Generates CLI arguments to mount the build directory if required.
+ * Generates CLI arguments to mount the current directory, or build directory.
  *
  * @param {boolean} mountBuild Whether to include build arguments.
- * @return {string[]} CLI arguments for mounting the build directory.
+ *
+ * @return {string[]} CLI arguments for mounting the relevant directory.
  */
-const maybeAddBuildArgs = ( mountBuild ) => {
+const addMountDirectory = ( mountBuild ) => {
+	let mountDir;
+	let vfs = '/wordpress/wp-content/plugins/';
+
 	if ( mountBuild ) {
 		const buildDirectory = getBuildDirectory();
-		const mountDir = buildDirectory.path.replace( /\\/g, '/' );
-		const vfs = `/wordpress/wp-content/plugins/${ buildDirectory.name }`;
-
-		return [ '--mountDirBeforeInstall', mountDir, vfs ];
+		mountDir = buildDirectory.path.replace( /\\/g, '/' );
+		vfs += buildDirectory.name;
+	} else {
+		const currentDirectory = process.cwd();
+		mountDir = currentDirectory.replace( /\\/g, '/' );
+		vfs += path.basename( currentDirectory );
 	}
 
-	return [];
+	return [ '--mountDirBeforeInstall', mountDir, vfs ];
 };
 
 /**
@@ -70,7 +76,7 @@ const startPlayground = async (
 		`--blueprint=${ getBlueprintPath( blueprint ) }`,
 		'--port',
 		port,
-		...maybeAddBuildArgs( mountBuild ),
+		...addMountDirectory()
 	];
 
 	// Prevent an argument collision with the Playwright CLI by
