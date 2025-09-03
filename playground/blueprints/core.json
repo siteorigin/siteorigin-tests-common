@@ -1,0 +1,66 @@
+{
+	"$schema": "https://playground.wordpress.net/blueprint-schema.json",
+	"features": {
+		"networking": true
+	},
+	"extraLibraries": [ "wp-cli" ],
+	"siteOptions": {
+		"blogname": "SiteOrigin Playground"
+	},
+	"steps": [
+		{
+			 "step": "resetData"
+		},
+		{
+			"step": "installTheme",
+			"themeData": {
+				"resource": "wordpress.org/themes",
+				"slug": "siteorigin-snapshot"
+			},
+			"options": {
+			"activate": true
+			}
+		},
+
+		{
+			"step": "installPlugin",
+			"pluginData": {
+				"resource": "wordpress.org/plugins",
+				"slug": "so-widgets-bundle"
+			},
+			"ifAlreadyInstalled": "skip"
+		},
+		{
+			"step": "activatePlugin",
+			"pluginName": "SiteOrigin Widgets Bundle",
+			"pluginPath": "/wordpress/wp-content/plugins/so-widgets-bundle/"
+		},
+
+		{
+			"step": "installPlugin",
+			"pluginData": {
+				"resource": "wordpress.org/plugins",
+				"slug": "siteorigin-panels"
+			},
+			"ifAlreadyInstalled": "skip"
+		},
+		{
+			"step": "activatePlugin",
+			"pluginName": "SiteOrigin Page Builder",
+			"pluginPath": "/wordpress/wp-content/plugins/siteorigin-panels/"
+		},
+
+		{
+			"step": "writeFile",
+			"path": "/wordpress/wp-content/plugins/so-playground.php",
+			"data": {
+				"resource": "url",
+				"url": "PLACEHOLDER"
+			}
+		},
+		{
+			"step": "runPHP",
+			"code": "<?php require_once '/wordpress/wp-load.php'; activate_plugin('/wordpress/wp-content/plugins/so-playground.php'); ?>"
+		}
+	]
+}
