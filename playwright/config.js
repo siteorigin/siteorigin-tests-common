@@ -19,7 +19,7 @@ let envPath = path.resolve( process.cwd(), 'tests', 'so-tests.env' );
 if ( fs.existsSync( envPath ) ) {
 	dotenv.config( { path: envPath } );
 } else {
-	envPath = process.cwd();
+	envPath = path.dirname(require.main.filename);
 }
 
 // Set default values for any missing environment variables.
@@ -30,15 +30,17 @@ const envDir = path.dirname( envPath );
 
 const config = defineConfig( {
 	testDir: './tests/e2e',
-	outputDir: path.join( envDir, 'results', 'report' ),
-	testResultsDir: path.join( envDir, 'results', 'report' ),
+	outputDir: './tests/results/reports',
+	testResultsDir: './tests/results/reports',
 	fullyParallel: true,
 	forbidOnly: !! process.env.CI,
 	retries: process.env.CI ? 2 : 0,
 	workers: process.env.CI ? 1 : undefined,
 	reporter: [
 		[ 'list' ],
-		[ 'html', { outputFolder: path.join( envDir, 'results', 'report' ) } ],
+		[ 'html', {
+			outputFolder: './results/report'
+		} ],
 	],
 	globalSetup: require.resolve( './globalSetup.js' ),
 	timeout: 60_000, // 60 seconds.
@@ -55,7 +57,7 @@ const config = defineConfig( {
 		video: 'on-first-retry',
 
 		// WP Testing.
-		storageState: path.join( envDir, 'tests/cache', 'storageState.json' ),
+		storageState: './tests/cache/storageState.json',
 
 		// Browser.
 		viewport: {
