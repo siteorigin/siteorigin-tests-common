@@ -26,12 +26,12 @@ const getBuildVersion = () => {
  * Runs the build process using gulp.
  *
  * @param {string} buildDir - The absolute path to the build directory.
- * @param {string} version - The build version to pass to the gulp command as an argument.
+ * @param {string} version - The build version to pass to the gulp command as an argument. Defaults to '2.0.0' as that'll satisfy all existing version checks.
  *
  * @throws {Error} Throws an error if the build process fails.
  * @return {Promise<void>} Resolves when the build process completes successfully.
  */
-const makeBuild = async ( buildDir, version ) => {
+const makeBuild = async ( buildDir, version = '2.0.0' ) => {
 	await execAsync(
 		'gulp',
 		[ 'build:release', `---v`, version ],
