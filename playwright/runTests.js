@@ -3,15 +3,18 @@
  *
  * - Adds system32 to PATH for Windows compatibility if missing.
  * - Switches to the highest installed Node version using nvm.
- * - Runs Playwright tests via npm script.
- * - Restores the Node version to 10.18.1 after tests.
- *
- * @module runTests
+ * - Builds the project if necessary.
+ * - Starts the WordPress Playground environment.
+ * - Runs Playwright tests via the npm script `test:e2e`.
+ * - Restores the Node version to its initial state after tests.
+ * - Exits with an error code if any step fails.
  */
 const execAsync = require( '../utilities/execAsync' );
+const startPlayground = require( '../playground/startPlayground' );
 
-
-
+const {
+	maybeMakeBuild
+} = require( '../utilities/builds' );
 
 const {
 	getCurrentNodeVersion,
@@ -27,8 +30,9 @@ const runTests = async () => {
 	}
 
 	const initialNodeVersion = await getCurrentNodeVersion();
+	const buildSuccessful = await maybeMakeBuild();
 	await maybeSwitchToHighestNodeVersion();
-
+	await startPlayground( buildSuccessful );
 
 	await execAsync(
 		'npx',
