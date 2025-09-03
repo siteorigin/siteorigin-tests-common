@@ -73,7 +73,13 @@ const startPlayground = async (
 		...maybeAddBuildArgs( mountBuild ),
 	];
 
-	const originalArgvLength = process.argv.length;
+	// Prevent an argument collision with the Playwright CLI by
+	// ensuring the a placeholder build version is always present.
+	if ( ! process.argv.some( arg => arg.startsWith( 'v=' ) ) ) {
+		process.argv.push( 'v=22' );
+	}
+
+	const originalArgvLength = process.argv.length + 1;
 	process.argv.push( ...cliArgs );
 
 	try {
