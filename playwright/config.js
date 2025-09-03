@@ -11,17 +11,22 @@
 const { defineConfig, devices } = require( '@playwright/test' );
 const dotenv = require( 'dotenv' );
 const path = require( 'path' );
+const fs = require( 'fs' );
 
-let envPath;
+let envPath = path.resolve( process.cwd(), 'tests', 'so-tests.env' );
 
-// Load environment variables.
-if ( process.env.SO_TESTS_ENV_PATH ) {
-	envPath = process.env.SO_TESTS_ENV_PATH;
+// Check if a config file present.
+if ( fs.existsSync( envPath ) ) {
+	dotenv.config( { path: envPath } );
 } else {
-	envPath = path.resolve( process.cwd(), 'tests', 'so-tests.env' );
+	envPath = process.cwd();
 }
+
+// Set default values for any missing environment variables.
+process.env.WP_BASE_URL = process.env.WP_BASE_URL || 'http://127.0.0.1:1129';
+process.env.WP_USERNAME = process.env.WP_USERNAME || 'admin';
+process.env.WP_PASSWORD = process.env.WP_PASSWORD || 'password';
 const envDir = path.dirname( envPath );
-dotenv.config( { path: envPath } );
 
 const config = defineConfig( {
 	testDir: './tests/e2e',
@@ -50,7 +55,7 @@ const config = defineConfig( {
 		video: 'on-first-retry',
 
 		// WP Testing.
-		storageState: path.join( envDir, 'cache', 'storageState.json' ),
+		storageState: path.join( envDir, 'tests/cache', 'storageState.json' ),
 
 		// Browser.
 		viewport: {
