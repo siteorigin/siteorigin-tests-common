@@ -1,3 +1,6 @@
+const fs = require( 'fs' );
+const path = require( 'path' );
+
 const { parseOptionsAndRunCLI } = require( '@wp-playground/cli' );
 const { getBuildDirectory } = require( '../utilities/builds' );
 
@@ -48,6 +51,18 @@ const getBlueprintPath = ( blueprint ) => {
 };
 
 /**
+ * Determines whether the playground should start based on `so-tests.env`
+ * file existence.
+ *
+ *
+ * @return {boolean} True if the configuration file exists, false otherwise.
+ */
+const shouldRunPlayground = () => {
+	const config = path.resolve( process.cwd(), 'tests', 'so-tests.env' );
+	return ! fs.existsSync( config );
+};
+
+/**
  * Starts the WordPress Playground server.
  *
  * This function initializes and starts a WordPress Playground instance
@@ -71,6 +86,10 @@ const startPlayground = async (
 	port = 1129,
 	blueprint = 'core'
 ) => {
+	if ( ! shouldRunPlayground() ) {
+		return false;
+	}
+
 	const cliArgs = [
 		'server',
 		`--blueprint=${ getBlueprintPath( blueprint ) }`,
