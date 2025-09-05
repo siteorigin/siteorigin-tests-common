@@ -19,6 +19,7 @@ const {
 const {
 	getCurrentNodeVersion,
 	maybeSwitchToHighestNodeVersion,
+	maybeRevertNodeVersionChange,
 } = require( '../utilities/node' );
 
 const runTests = async () => {
