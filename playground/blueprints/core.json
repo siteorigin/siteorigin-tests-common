@@ -61,6 +61,13 @@
 		{
 			"step": "runPHP",
 			"code": "<?php require_once '/wordpress/wp-load.php'; activate_plugin('/wordpress/wp-content/plugins/so-playground.php'); ?>"
+		},
+		{
+			"step": "importWxr",
+			"file": {
+				"resource": "url",
+				"url": "https://raw.githubusercontent.com/WPTT/theme-unit-test/master/themeunittestdata.wordpress.xml"
+			}
 		}
 	]
 }
