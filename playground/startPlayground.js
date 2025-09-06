@@ -70,6 +70,9 @@ const shouldRunPlayground = () => {
  * dynamically constructs CLI arguments to configure the server and
  * ensures the process is properly cleaned up after execution.
  *
+ * The function removes any 'v=' arguments from process.argv to prevent
+ * a potential collision with the Playwright CLI.
+ *
  * @async
  * @param {boolean} [mountBuild=false] Whether to include build arguments
  *                                     for mounting the build directory.
@@ -98,13 +101,12 @@ const startPlayground = async (
 		...addMountDirectory( mountBuild )
 	];
 
-	// Prevent an argument collision with the Playwright CLI by
-	// ensuring the a placeholder build version is always present.
-	if ( ! process.argv.some( arg => arg.startsWith( 'v=' ) ) ) {
-		process.argv.push( 'v=22' );
-	}
+	const originalArgvLength = process.argv.length;
 
-	const originalArgvLength = process.argv.length + 1;
+	// Prevent an argument collision with the Playwright CLI by
+	// removing the version argument if it exists.
+	process.argv = process.argv.filter( arg => ! arg.startsWith( 'v=' ) );
+
 	process.argv.push( ...cliArgs );
 
 	try {
