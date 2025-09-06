@@ -95,7 +95,7 @@ const startPlayground = async (
 		`--blueprint=${ getBlueprintPath( blueprint ) }`,
 		'--port',
 		port,
-		...addMountDirectory()
+		...addMountDirectory( mountBuild )
 	];
 
 	// Prevent an argument collision with the Playwright CLI by
