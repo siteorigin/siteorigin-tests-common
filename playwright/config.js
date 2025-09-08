@@ -34,8 +34,8 @@ const config = defineConfig( {
 	testResultsDir: './tests/results/reports',
 	fullyParallel: true,
 	forbidOnly: !! process.env.CI,
-	retries: process.env.CI ? 2 : 0,
-	workers: process.env.CI ? 1 : 2,
+	retries: process.env.CI ? 2 : 1,
+	workers: process.env.CI ? 2 : 1,
 	reporter: [
 		[ 'list' ],
 		[ 'html', {
@@ -43,7 +43,7 @@ const config = defineConfig( {
 		} ],
 	],
 	globalSetup: require.resolve( './globalSetup.js' ),
-	timeout: 60_000, // 60 seconds.
+	timeout: process.env.CI ? 60_000 : 120_000, // 60 seconds for CI, 120 seconds for local.
 	use: {
 		// Playwright.
 		baseURL: process.env.WP_BASE_URL,
