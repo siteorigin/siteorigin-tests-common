@@ -1,7 +1,6 @@
 const path = require( 'path' );
 const fs = require( 'fs' );
 const execAsync = require( './execAsync' );
-const { maybeSwitchToBuildVersion } = require( './node' );
 
 /**
  * Retrieves the build version from the command-line arguments.
@@ -68,9 +67,6 @@ const maybeMakeBuild = async () => {
 	if ( ! version ) {
 		return false;
 	}
-
-	// Build scripts require an older version of Node.
-	await maybeSwitchToBuildVersion();
 
 	try {
 		await makeBuild( buildDir, version );

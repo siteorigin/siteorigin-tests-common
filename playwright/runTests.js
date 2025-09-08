@@ -8,9 +8,6 @@
  */
 const execAsync = require( '../utilities/execAsync' );
 const startPlayground = require( '../playground/startPlayground' );
-const {
-	maybeSwitchToHighestNodeVersion,
-} = require( '../utilities/node' );
 
 const runTests = async () => {
 	const isWindows = process.platform === 'win32';
@@ -19,8 +16,6 @@ const runTests = async () => {
 	if ( isWindows && ! process.env.PATH.includes( 'C:\\WINDOWS\\system32' ) ) {
 		process.env.PATH = `${ process.env.PATH };C:\\WINDOWS\\system32`;
 	}
-	
-	await maybeSwitchToHighestNodeVersion();
 
 	await startPlayground();
 
