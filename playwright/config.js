@@ -39,7 +39,7 @@ const config = defineConfig( {
 	reporter: [
 		[ 'list' ],
 		[ 'html', {
-			outputFolder: './results/report'
+			outputFolder: './tests/results/report'
 		} ],
 	],
 	globalSetup: require.resolve( './globalSetup.js' ),
