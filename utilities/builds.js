@@ -39,7 +39,7 @@ const getBuildVersion = () => {
 const makeBuild = async ( buildDir, version ) => {
 	await execAsync(
 		'gulp',
-		[ 'build:release', `---v`, version ],
+		[ 'build:release', `--release`, version ],
 		{
 			cwd: buildDir,
 		}
