@@ -18,6 +18,19 @@ let envPath = path.resolve( process.cwd(), 'tests', 'so-tests.env' );
 // Check if a config file present.
 if ( fs.existsSync( envPath ) ) {
 	dotenv.config( { path: envPath } );
+
+	// Due to the config file, we need to ensure all required variables are set.
+	const requiredVariables = [
+		'WP_BASE_URL',
+		'WP_USERNAME',
+		'WP_PASSWORD',
+	];
+
+	for ( const variable of requiredVariables ) {
+		if ( ! process.env[ variable ] ) {
+			throw new Error( `Missing required environment variable: ${ variable }` );
+		}
+	}
 } else {
 	envPath = path.dirname(require.main.filename);
 }
