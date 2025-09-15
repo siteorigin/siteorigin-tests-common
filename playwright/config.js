@@ -17,7 +17,13 @@ let envPath = path.resolve( process.cwd(), 'tests', 'so-tests.env' );
 
 // Check if a config file present.
 if ( fs.existsSync( envPath ) ) {
+	// Temporarily suppress console.log.
+	const originalConsoleLog = console.log;
+	console.log = () => {};
+
 	dotenv.config( { path: envPath } );
+
+	console.log = originalConsoleLog;
 
 	// Due to the config file, we need to ensure all required variables are set.
 	const requiredVariables = [
