@@ -231,11 +231,20 @@ const openSiteEditorCanvas = async ( page, admin ) => {
  */
 const addBlock = async( admin, blockName, isWb = true ) => {
 	await admin.editor.insertBlock( { name: blockName } );
-	await admin.page.waitForTimeout( 1000 );
 
 	const widget = admin.editor.canvas.locator( `.wp-block[data-type="${ blockName }"]` );
 	await expect( widget ).toBeVisible();
 	await widget.scrollIntoViewIfNeeded();
+
+	if ( isWb ) {
+		// Wait for the form to be ready.
+		const blockLoader = widget.locator( '.so-widgets-spinner-container' );
+		await expect( blockLoader ).toBeVisible( { timeout: 20000 } );
+		await expect( blockLoader ).toBeHidden( { timeout: 10000 } );
+
+		const widgetForm = widget.locator( '.siteorigin-widget-form.so-widget-block-container' );
+		await expect( widgetForm ).toBeVisible();
+	}
 
 	await admin.editor.selectBlocks( widget );
 
@@ -244,12 +253,6 @@ const addBlock = async( admin, blockName, isWb = true ) => {
 	await widget.hover();
 	await expect( widget ).toHaveClass( /is-selected/ );
 	await expect( widget ).toHaveClass( /is-hovered/ );
-
-	if ( isWb ) {
-		// Wait for the form to be ready.
-		const blockLoader = widget.locator( '.so-widgets-spinner-container' );
-		await expect( blockLoader ).toBeHidden( { timeout: 10000 } );
-	}
 
 	// To prevent a potential desync, we need to cause a change in the block.
 	const editableFields = widget.locator( 'input[type="text"], textarea' );
@@ -266,6 +269,9 @@ const addBlock = async( admin, blockName, isWb = true ) => {
 			break;
 		}
 	}
+
+	// Give time for fields to be set up.
+	await admin.page.waitForTimeout( 1000 );
 
 	return widget;
 };
