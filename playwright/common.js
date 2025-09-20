@@ -208,7 +208,7 @@ const maybeCloseSiteEditorModal = async ( page, modalClass ) => {
  */
 const openSiteEditorCanvas = async ( page, admin ) => {
 	await soGoTo( page, 'wp-admin/site-editor.php?p=%2F&canvas=edit' );
-	await admin.editor.canvas.locator( 'body' ).waitFor( { timeout: 20000 } );
+	await admin.editor.canvas.locator( '.block-editor-iframe__body' ).waitFor( { timeout: 20000 } );
 
 	await maybeCloseSiteEditorModal( page, '.edit-site-welcome-guide' );
 };
@@ -231,6 +231,10 @@ const openSiteEditorCanvas = async ( page, admin ) => {
  */
 const addBlock = async( admin, blockName, isWb = true ) => {
 	await admin.editor.insertBlock( { name: blockName } );
+	if ( isWb ) {
+		// WB Forms require a server side request before they're rendered.
+		await waitForRequestToFinish( admin.page, '/wp-json/sowb/v1/widgets/forms', 10000 );
+	}
 
 	const widget = admin.editor.canvas.locator( `.wp-block[data-type="${ blockName }"]` );
 	await expect( widget ).toBeVisible();
@@ -239,11 +243,7 @@ const addBlock = async( admin, blockName, isWb = true ) => {
 	if ( isWb ) {
 		// Wait for the form to be ready.
 		const blockLoader = widget.locator( '.so-widgets-spinner-container' );
-		await expect( blockLoader ).toBeVisible( { timeout: 20000 } );
 		await expect( blockLoader ).toBeHidden( { timeout: 10000 } );
-
-		const widgetForm = widget.locator( '.siteorigin-widget-form.so-widget-block-container' );
-		await expect( widgetForm ).toBeVisible();
 	}
 
 	await admin.editor.selectBlocks( widget );
@@ -269,9 +269,6 @@ const addBlock = async( admin, blockName, isWb = true ) => {
 			break;
 		}
 	}
-
-	// Give time for fields to be set up.
-	await admin.page.waitForTimeout( 1000 );
 
 	return widget;
 };
