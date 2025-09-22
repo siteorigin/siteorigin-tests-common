@@ -27,9 +27,9 @@ const execAsync = (
 		options.stdio = stdio;
 
 		const child = spawn( command, args, {
-			stdio,
 			shell: isWindows ? 'cmd.exe' : '/bin/sh',
 			...options,
+			stdio,
 		} );
 
 		if ( dataCallback ) {
