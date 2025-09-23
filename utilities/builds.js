@@ -42,6 +42,7 @@ const makeBuild = async ( buildDir, version ) => {
 		[ 'run', 'build:release', `--release=${version}` ],
 		{
 			cwd: buildDir,
+			env: { ...process.env, SKIP_I18N: '1' },
 		}
 	);
 };
