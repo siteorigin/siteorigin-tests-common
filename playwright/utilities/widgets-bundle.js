@@ -25,6 +25,34 @@ const getField = async ( widget, fieldName, initCheck = true ) => {
 };
 
 /**
+ * Opens a section if it's not already open and returns the section locator.
+ *
+ * @async
+ * @param {string} section - The section name/identifier to open.
+ * @param {Locator} widget - The Playwright locator for the widget container.
+ * @throws {Error} Throws an error if the section cannot be found, is not visible, or fails to open within the timeout.
+ *
+ * @returns {Promise<Locator>} The Playwright locator for the opened section.
+ */
+const openSection = async ( section, widget ) => {
+	section = widget.locator( `.siteorigin-widget-field-${ section }` );
+	await expect( section ).toBeVisible();
+	const sectionLabel = section.locator( '> .siteorigin-widget-field-label' );
+	await expect( sectionLabel ).toBeVisible();
+
+	// Is the section already open?
+	if ( await sectionLabel.evaluate( ( el ) => el.classList.contains( 'siteorigin-widget-section-visible' ) ) ) {
+		return section;
+	}
+
+	// Section is not open, so open it
+	await sectionLabel.click();
+	await expect( sectionLabel ).toHaveClass( /siteorigin-widget-section-visible/, { timeout: 5000 } );
+
+	return section;
+}
+
+/**
  * Switches a widget between edit and preview mode in the Site Editor.
  *
  * Shows the block toolbar for the widget, finds the appropriate toolbar button,
@@ -55,5 +83,6 @@ const switchWidgetMode = async( admin, widget, mode = 'edit' ) => {
 
 module.exports = {
 	getField,
+	openSection,
 	switchWidgetMode
 };
