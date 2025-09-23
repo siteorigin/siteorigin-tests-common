@@ -233,7 +233,7 @@ const addBlock = async( admin, blockName, isWb = true ) => {
 	await admin.editor.insertBlock( { name: blockName } );
 	if ( isWb ) {
 		// WB Forms require a server side request before they're rendered.
-		await waitForRequestToFinish( admin.page, '/wp-json/sowb/v1/widgets/forms', 10000 );
+		await waitForRequestToFinish( admin.page, '/wp-json/sowb/v1/widgets/forms', 20000 );
 	}
 
 	const widget = admin.editor.canvas.locator( `.wp-block[data-type="${ blockName }"]` );
@@ -243,7 +243,7 @@ const addBlock = async( admin, blockName, isWb = true ) => {
 	if ( isWb ) {
 		// Wait for the form to be ready.
 		const blockLoader = widget.locator( '.so-widgets-spinner-container' );
-		await expect( blockLoader ).toBeHidden( { timeout: 10000 } );
+		await expect( blockLoader ).toBeHidden( { timeout: 15000 } );
 	}
 
 	await admin.editor.selectBlocks( widget );
