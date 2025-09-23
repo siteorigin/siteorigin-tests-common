@@ -238,7 +238,6 @@ const addBlock = async( admin, blockName, isWb = true ) => {
 
 	const widget = admin.editor.canvas.locator( `.wp-block[data-type="${ blockName }"]` );
 	await expect( widget ).toBeVisible();
-	await widget.scrollIntoViewIfNeeded();
 
 	if ( isWb ) {
 		// Wait for the form to be ready.
