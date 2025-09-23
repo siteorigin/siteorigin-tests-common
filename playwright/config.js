@@ -80,8 +80,8 @@ const config = defineConfig( {
 
 		// Browser.
 		viewport: {
-			width: 960,
-			height: 700,
+			width: 1638,
+			height: 922,
 		},
 		contextOptions: {
 			reducedMotion: 'reduce',
