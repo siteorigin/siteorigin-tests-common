@@ -28,16 +28,24 @@ const getField = async ( widget, fieldName, initCheck = true ) => {
  * Opens a section if it's not already open and returns the section locator.
  *
  * @async
- * @param {string} section - The section name/identifier to open.
+ * @param {string} sectionId - The section name/identifier to open.
  * @param {Locator} widget - The Playwright locator for the widget container.
  * @throws {Error} Throws an error if the section cannot be found, is not visible, or fails to open within the timeout.
  *
  * @returns {Promise<Locator>} The Playwright locator for the opened section.
  */
-const openSection = async ( section, widget ) => {
-	section = widget.locator( `.siteorigin-widget-field-${ section }` );
+const openSection = async ( sectionId, widget ) => {
+	const section = widget.locator( `.siteorigin-widget-field-${ sectionId }` );
 	await expect( section ).toBeVisible();
-	const sectionLabel = section.locator( '> .siteorigin-widget-field-label' );
+
+	widget.scrollIntoViewIfNeeded();
+
+	let labelSelector = ' > .siteorigin-widget-field-label';
+	if ( sectionId === 'posts' ) {
+		labelSelector = ' > .posts-container-label-wrapper';
+	}
+
+	const sectionLabel = section.locator( labelSelector );
 	await expect( sectionLabel ).toBeVisible();
 
 	// Is the section already open?
