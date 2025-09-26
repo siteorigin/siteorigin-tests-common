@@ -27,7 +27,7 @@ const execAsync = (
 		options.stdio = stdio;
 
 		const child = spawn( command, args, {
-			shell: isWindows ? 'cmd.exe' : '/bin/sh',
+			shell: isWindows ? 'cmd.exe' : '/bin/bash',
 			...options,
 			stdio,
 		} );

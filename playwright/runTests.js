@@ -31,10 +31,11 @@ const runTests = async () => {
 
 	await execAsync(
 		'npx',
-		['npm', 'run', 'test:e2e'],
-		{
-			shell: isWindows ? 'cmd.exe' : '/bin/sh',
-		}
+		[
+			'npm',
+			'run',
+			'test:e2e',
+		],
 	);
 };
 
