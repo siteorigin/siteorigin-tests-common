@@ -38,8 +38,14 @@ const getBuildVersion = () => {
  */
 const makeBuild = async ( buildDir, version ) => {
 	await execAsync(
-		'npm',
-		[ 'run', 'build:release', `--release=${version}` ],
+		'npx',
+		[
+			'cross-env',
+			`RELEASE_VERSION=${version}`,
+			'npm',
+			'run',
+			'build:release',
+		],
 		{
 			cwd: buildDir,
 			env: { ...process.env, SKIP_I18N: '1' },
