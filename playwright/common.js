@@ -333,9 +333,61 @@ const waitForRequestToFinish = async( page, action, timeout = 15000 ) => {
 	}
 };
 
+/**
+ * Ensures the specified locator is visible by checking its visibility and scrolling to it if necessary.
+ *
+ * This function first checks if the element is visible. If not, it calculates the position of the element
+ * relative to the viewport, scrolls the page to bring the element into view, and verifies its visibility.
+ * Useful for handling cases where sticky headers or other UI elements obstruct the view.
+ *
+ * @async
+ * @param {import('@playwright/test').Locator} locator - The Playwright locator for the element to ensure visibility.
+ * @param {number} [offset=100] - The vertical offset to apply when scrolling (default is 100px).
+ * @param {number} [timeout=5000] - The timeout for the visibility check (default is 5000ms).
+ *
+ * @returns {Promise<void>} Resolves when the element is visible.
+ */
+const ensureElementVisible = async ( locator, offset = 100, timeout = 5000 ) => {
+	// Check if the element is already visible.
+	const isVisible = await locator.isVisible();
+	if ( ! isVisible ) {
+		// Scroll to the element with the specified offset.
+		await locator.evaluate( ( element, offset ) => {
+			const rect = element.getBoundingClientRect();
+			window.scrollBy( 0, rect.top - offset );
+		}, offset );
+	} else if ( ! offset ) {
+		return;
+	}
+
+	// Ensure the element is visible after scrolling.
+	await expect( locator ).toBeVisible( { timeout } );
+};
+
+/**
+ * Calculates the vertical offset of a DOM element relative to the viewport.
+ *
+ * @param {import('@playwright/test').Page} page - The Playwright page object.
+ * @param {string} selector - The CSS selector for the element to measure.
+ *
+ * @returns {Promise<number>} The calculated offset in pixels, doubled.
+ */
+const calculateOffset = async ( page, selector, canvas = true ) => {
+	const element = page.locator( selector );
+
+	if ( element ) {
+		const rect = await element.boundingBox();
+		return ( rect.height + rect.y ) * 2;
+	}
+
+	return 0;
+};
+
 module.exports = {
 	addBlock,
+	calculateOffset,
 	doLogin,
+	ensureElementVisible,
 	handleDialog,
 	initializeAdmin,
 	openSiteEditorCanvas,
