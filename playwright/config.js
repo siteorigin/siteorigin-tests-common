@@ -47,7 +47,6 @@ if ( fs.existsSync( envPath ) ) {
 process.env.WP_BASE_URL = process.env.WP_BASE_URL || 'http://127.0.0.1:1129';
 process.env.WP_USERNAME = process.env.WP_USERNAME || 'admin';
 process.env.WP_PASSWORD = process.env.WP_PASSWORD || 'password';
-const envDir = path.dirname( envPath );
 
 const config = defineConfig( {
 	testDir: './tests/e2e',
@@ -60,7 +59,7 @@ const config = defineConfig( {
 	reporter: [
 		[ 'list' ],
 		[ 'html', {
-			outputFolder: './tests/results/report'
+			outputFolder: './tests/results/report',
 		} ],
 	],
 	globalSetup: require.resolve( './globalSetup.js' ),
