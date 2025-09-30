@@ -49,17 +49,18 @@ const setupRequestUtils = async ( config = {} ) => {
 	}
 
 	const storageStatePath = typeof storageState === 'string' ? storageState : undefined;
-	const requestUtils = await RequestUtils.setup( {
-		baseURL,
-		storageStatePath,
-		ignoreHTTPSErrors
-	} );
 
-	requestUtils.request = await request.newContext( {
+	const requestContext = await request.newContext( {
 		baseURL,
 		ignoreHTTPSErrors,
 		storageState: storageStatePath
 	} );
+
+	const requestUtils = await RequestUtils.setup( requestContext, {
+		storageStatePath,
+	} );
+
+	await requestUtils.setupRest();
 
 	return requestUtils;
 };
