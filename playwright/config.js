@@ -37,8 +37,10 @@ if ( fs.existsSync( envPath ) ) {
 			throw new Error( `Missing required environment variable: ${ variable }` );
 		}
 	}
+
+	process.env.WP_PLAYGROUND = 'false';
 } else {
-	envPath = path.dirname(require.main.filename);
+	process.env.WP_PLAYGROUND = 'true';
 }
 
 // Set default values for any missing environment variables.
