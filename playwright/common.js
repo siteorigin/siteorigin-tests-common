@@ -160,7 +160,7 @@ const doLogin = async ( page, type = 'admin' ) => {
  * @param {Object} page The Playwright page object.
  * @returns {Promise<Admin>} The initialized Admin instance.
  */
-const initializeAdmin = async ( page ) => {
+const setupAdminE2E = async ( page ) => {
 	const pageUtils = new PageUtils( { page } );
 	const editor = new Editor( { page, pageUtils } );
 
@@ -389,8 +389,8 @@ module.exports = {
 	doLogin,
 	ensureElementVisible,
 	handleDialog,
-	initializeAdmin,
 	openSiteEditorCanvas,
+	setupAdminE2E,
 	setupRequestUtils,
 	soGoTo,
 	waitForRequestToFinish,
