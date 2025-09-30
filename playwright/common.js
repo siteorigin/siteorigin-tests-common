@@ -10,20 +10,22 @@ const {
 	Editor
 } = require( '@wordpress/e2e-test-utils-playwright' );
 
+const path = require( 'path' );
 
 /**
- * Retrieves the Playwright configuration, importing it if necessary.
+ * Retrieves the Playwright configuration from the current working directory.
  *
- * @param {Object} config The current configuration object.
- * @returns {Promise<Object>} The resolved configuration object.
+ * @returns {Object} The Playwright configuration object.
  */
-const maybeGetConfig = async ( config ) => {
-	if ( Object.keys( config ).length === 0 ) {
-		const importedConfig = await import( '../../playwright.config.js' );
-		config = importedConfig.default.default;
+const getPlaywrightConfig = () => {
+	const configPath = path.resolve(process.cwd(), 'playwright.config.js');
+	try {
+		const config = require(configPath); // Dynamically require the config file
+		return config;
+	} catch (error) {
+		console.error(`Failed to load Playwright config from ${configPath}:`, error);
+		throw error;
 	}
-
-	return config;
 };
 
 /**
@@ -34,7 +36,7 @@ const maybeGetConfig = async ( config ) => {
  * @throws {Error} If the baseURL is invalid or missing.
  */
 const setupRequestUtils = async ( config = {} ) => {
-	config = await maybeGetConfig( config );
+	config = await getPlaywrightConfig( config );
 
 	const {
 		storageState,
