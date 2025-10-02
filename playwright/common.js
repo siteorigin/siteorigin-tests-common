@@ -346,25 +346,24 @@ const waitForRequestToFinish = async( page, action, timeout = 15000 ) => {
  *
  * @async
  * @param {import('@playwright/test').Locator} locator - The Playwright locator for the element to ensure visibility.
- * @param {number} [offset=100] - The vertical offset to apply when scrolling (default is 100px).
- * @param {number} [timeout=5000] - The timeout for the visibility check (default is 5000ms).
+ * @param {number} offset - The vertical offset to apply when scrolling (default is 100px).
+ * @param {number} timeout - The timeout for the visibility check (default is 5000ms).
  *
  * @returns {Promise<void>} Resolves when the element is visible.
  */
-const ensureElementVisible = async ( locator, offset = 100, timeout = 5000 ) => {
+const ensureElementVisible = async ( locator, offset, timeout = 5000 ) => {
 	// Check if the element is already visible.
 	const isVisible = await locator.isVisible();
-	if ( ! isVisible ) {
-		// Scroll to the element with the specified offset.
-		await locator.evaluate( ( element, offset ) => {
-			const rect = element.getBoundingClientRect();
-			window.scrollBy( 0, rect.top - offset );
-		}, offset );
-	} else if ( ! offset ) {
+	if ( isVisible ) {
 		return;
 	}
 
-	// Ensure the element is visible after scrolling.
+	// Scroll to the element with the specified offset.
+	await locator.evaluate( ( element, offset ) => {
+		const rect = element.getBoundingClientRect();
+		window.scrollBy( 0, rect.top - offset );
+	}, offset );
+
 	await expect( locator ).toBeVisible( { timeout } );
 };
 
