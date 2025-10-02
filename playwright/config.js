@@ -81,8 +81,8 @@ const config = defineConfig( {
 
 		// Browser.
 		viewport: {
-			width: 1638,
-			height: 922,
+			width: process.env.CI ? 1920 : 1280,
+			height: process.env.CI ? 1080 : 720,
 		},
 		contextOptions: {
 			reducedMotion: 'reduce',
