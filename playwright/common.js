@@ -229,10 +229,11 @@ const openSiteEditorCanvas = async ( page, admin ) => {
  * @async
  * @param {Admin} admin - The initialized Admin instance with editor context.
  * @param {string} blockName - The block's full name.
+ * @param {number} offset - The vertical offset to apply when scrolling.
  * @param {boolean} [isWb=true] - Whether the block is a Widgets Bundle block.
  * @returns {Promise<Locator>} The Playwright locator for the widget container.
  */
-const addBlock = async( admin, blockName, isWb = true ) => {
+const addBlock = async( admin, blockName, offset, isWb = true ) => {
 	await admin.editor.insertBlock( { name: blockName } );
 	if ( isWb ) {
 		// WB Forms require a server side request before they're rendered.
@@ -240,7 +241,6 @@ const addBlock = async( admin, blockName, isWb = true ) => {
 	}
 
 	const widget = admin.editor.canvas.locator( `.wp-block[data-type="${ blockName }"]` );
-	await expect( widget ).toBeVisible();
 
 	if ( isWb ) {
 		// Wait for the form to be ready.
@@ -249,6 +249,8 @@ const addBlock = async( admin, blockName, isWb = true ) => {
 	}
 
 	await admin.editor.selectBlocks( widget );
+
+	await ensureElementVisible( widget, offset );
 
 	// Ensure the block is active, and setup.
 	await widget.click();
@@ -271,6 +273,8 @@ const addBlock = async( admin, blockName, isWb = true ) => {
 			break;
 		}
 	}
+
+	await ensureElementVisible( widget, offset );
 
 	return widget;
 };
