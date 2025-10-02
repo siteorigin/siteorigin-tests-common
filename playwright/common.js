@@ -370,20 +370,30 @@ const ensureElementVisible = async ( locator, offset, timeout = 5000 ) => {
 /**
  * Calculates the vertical offset of a DOM element relative to the viewport.
  *
+ * This function determines the vertical offset of a specified DOM element
+ * and adds predefined toolbar sizes to account for the block editor's UI.
+ * The calculated offset is doubled to ensure proper positioning during
+ * automated tests.
+ *
  * @param {import('@playwright/test').Page} page - The Playwright page object.
  * @param {string} selector - The CSS selector for the element to measure.
+ * @param {boolean} [canvas=true] - Whether the calculation is for the editor canvas.
  *
  * @returns {Promise<number>} The calculated offset in pixels, doubled.
  */
 const calculateOffset = async ( page, selector, canvas = true ) => {
 	const element = page.locator( selector );
+	const blockEditorBlockToolbarSize = 48;
+	const blockEditorHeaderToolbarSize = 60;
+	const blockEditorOffset = blockEditorBlockToolbarSize + blockEditorHeaderToolbarSize;
 
 	if ( element ) {
 		const rect = await element.boundingBox();
-		return ( rect.height + rect.y ) * 2;
+		return ( rect.height + rect.y ) * 2 + blockEditorOffset;
 	}
 
-	return 0;
+	return blockEditorOffset;
+};
 };
 
 module.exports = {
