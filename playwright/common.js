@@ -214,6 +214,8 @@ const openSiteEditorCanvas = async ( page, admin ) => {
 	await admin.editor.canvas.locator( '.block-editor-iframe__body' ).waitFor( { timeout: 20000 } );
 
 	await maybeCloseSiteEditorModal( page, '.edit-site-welcome-guide' );
+
+	await disableBlockSettingsMenu( page );
 };
 
 /**
@@ -394,6 +396,27 @@ const calculateOffset = async ( page, selector, canvas = true ) => {
 
 	return blockEditorOffset;
 };
+
+/**
+ * Disables the block settings menu in the WordPress editor.
+ *
+ * This function hides the block settings menu by injecting a style tag into the page.
+ * The settings menu can sometimes accidentally be triggered during automated tests,
+ * so this ensures it remains hidden to prevent interference.
+ *
+ * @async
+ * @param {import('@playwright/test').Page} page - The Playwright page object.
+ *
+ * @returns {Promise<void>} Resolves when the style tag is added.
+ */
+const disableBlockSettingsMenu = async ( page ) => {
+	await page.addStyleTag( {
+		content: `
+			.components-popover__content .block-editor-block-settings-menu {
+				display: none !important;
+			}
+		`,
+	} );
 };
 
 module.exports = {
