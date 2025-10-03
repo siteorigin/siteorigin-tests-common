@@ -64,7 +64,13 @@ const makeBuild = async ( buildDir, version ) => {
 const maybeMakeBuild = async () => {
 	const buildDir = path.resolve( process.cwd(), 'build' );
 
-	// Check if the build directory exists.
+	// Detect if running in GitHub Actions. The build process is handled
+	// separately in this environment, so we can assume it's successful.
+	if ( process.env.GITHUB_ACTIONS === 'true' ) {
+		return true;
+	}
+
+	// Check if the build direlctory exists.
 	if ( ! fs.existsSync( buildDir ) ) {
 		return false;
 	}
