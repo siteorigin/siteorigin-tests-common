@@ -219,6 +219,47 @@ const openSiteEditorCanvas = async ( page, admin ) => {
 };
 
 /**
+ * Neutralizes the Site Editor sticky header to prevent it from blocking interactions.
+ *
+ * Injects a style element into the Site Editor iframe that disables sticky positioning
+ * and pointer events on the template part header so fields remain accessible during tests.
+ *
+ * @async
+ * @param {import('@wordpress/e2e-test-utils-playwright').Admin} admin - Initialized Admin instance.
+ * @returns {Promise<void>} Resolves once the style tag has been injected (or already exists).
+ */
+const neutralizeSiteEditorStickyHeader = async ( admin ) => {
+	await admin.page.evaluate( () => {
+		const iframe = document.querySelector( 'iframe[name="editor-canvas"]' );
+		if ( ! iframe || ! iframe.contentDocument || ! iframe.contentDocument.head ) {
+			return;
+		}
+
+		const doc = iframe.contentDocument;
+		const styleId = 'sow-tests-neutralize-sticky-header';
+		if ( doc.getElementById( styleId ) ) {
+			return;
+		}
+
+		const style = doc.createElement( 'style' );
+		style.id = styleId;
+		style.textContent = `
+			header.wp-block-template-part,
+			header.wp-block-template-part > .is-position-sticky {
+				position: static !important;
+			}
+
+			header.wp-block-template-part {
+				pointer-events: none !important;
+				z-index: 0 !important;
+			}
+		`;
+
+		doc.head.appendChild( style );
+	} );
+};
+
+/**
  * Inserts a block into the Site Editor and returns its widget container.
  *
  * This function:
@@ -426,6 +467,7 @@ module.exports = {
 	ensureElementVisible,
 	handleDialog,
 	openSiteEditorCanvas,
+	neutralizeSiteEditorStickyHeader,
 	setupAdminE2E,
 	setupRequestUtils,
 	soGoTo,
