@@ -129,8 +129,28 @@ const doLogin = async ( page, type = 'admin' ) => {
 	await soGoTo( page, 'wp-login.php' );
 
 	await page.waitForSelector( '#user_login', { timeout: 10000 } );
-	await page.fill( '#user_login', username );
-	await page.fill( '#user_pass', password );
+
+	// wp-login.php focuses and selects #user_login 200ms after its inline
+	// script runs. If that lands while the password is being filled, the
+	// password replaces the username and the empty, required #user_pass
+	// blocks the submit. Wait for the autofocus first. It doesn't run on
+	// error pages or when enable_login_autofocus is false, so don't require it.
+	await page.waitForFunction(
+		() => document.activeElement?.id === 'user_login',
+		null,
+		{ timeout: 2000 }
+	).catch( () => {} );
+
+	await expect( async () => {
+		await page.fill( '#user_login', username );
+		await page.fill( '#user_pass', password );
+		await expect( page.locator( '#user_login' ) ).toHaveValue( username, { timeout: 500 } );
+		// Compare outside the matcher so a failure never prints the password.
+		expect(
+			await page.locator( '#user_pass' ).inputValue() === password,
+			'#user_pass should hold the password'
+		).toBe( true );
+	} ).toPass( { timeout: 10000 } );
 
 	// Listen for navigation to wp-admin and stop it asap.
 	let navigationStopped = false;
@@ -147,9 +167,16 @@ const doLogin = async ( page, type = 'admin' ) => {
 
 	page.on( 'framenavigated', navHandler );
 
-	await page.click( '#wp-submit' );
-
-	page.off( 'framenavigated', navHandler );
+	// Wait for the redirect to wp-admin, so a failed submit fails here
+	// rather than as "Not logged in" in a later step.
+	try {
+		await Promise.all( [
+			page.waitForURL( /\/wp-admin/, { waitUntil: 'commit' } ),
+			page.click( '#wp-submit' ),
+		] );
+	} finally {
+		page.off( 'framenavigated', navHandler );
+	}
 
 	return true;
 };
