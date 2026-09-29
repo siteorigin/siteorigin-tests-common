@@ -165,12 +165,14 @@ const doLogin = async ( page, type = 'admin' ) => {
 
 	// Wait for the redirect to wp-admin, so a failed submit fails here
 	// rather than as "Not logged in" in a later step.
-	await Promise.all( [
-		page.waitForURL( /\/wp-admin/, { waitUntil: 'commit' } ),
-		page.click( '#wp-submit' ),
-	] );
-
-	page.off( 'framenavigated', navHandler );
+	try {
+		await Promise.all( [
+			page.waitForURL( /\/wp-admin/, { waitUntil: 'commit' } ),
+			page.click( '#wp-submit' ),
+		] );
+	} finally {
+		page.off( 'framenavigated', navHandler );
+	}
 
 	return true;
 };
