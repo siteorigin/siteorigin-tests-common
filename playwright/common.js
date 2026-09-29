@@ -145,7 +145,11 @@ const doLogin = async ( page, type = 'admin' ) => {
 		await page.fill( '#user_login', username );
 		await page.fill( '#user_pass', password );
 		await expect( page.locator( '#user_login' ) ).toHaveValue( username, { timeout: 500 } );
-		await expect( page.locator( '#user_pass' ) ).toHaveValue( password, { timeout: 500 } );
+		// Compare outside the matcher so a failure never prints the password.
+		expect(
+			await page.locator( '#user_pass' ).inputValue() === password,
+			'#user_pass should hold the password'
+		).toBe( true );
 	} ).toPass( { timeout: 10000 } );
 
 	// Listen for navigation to wp-admin and stop it asap.
