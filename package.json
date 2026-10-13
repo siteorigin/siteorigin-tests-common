@@ -3,6 +3,9 @@
   "description": "Common utilities and helpers for SiteOrigin test automation.",
   "author": "SiteOrigin",
   "license": "GPL-3.0",
+  "scripts": {
+    "test": "node --test tests/*.test.js"
+  },
   "dependencies": {
     "@playwright/test": "^1.55.0",
     "@types/node": "^24.0.14",
