@@ -114,8 +114,8 @@ test( 'the guard rejects a malformed mount description', async () => {
 	);
 } );
 
-test( 'the guard passes when the mounted plugin is active', async () => {
-	for ( const status of [ 'active', 'network-active' ] ) {
+test( 'the guard passes when the mounted plugin is installed', async () => {
+	for ( const status of [ 'active', 'network-active', 'inactive' ] ) {
 		const requestUtils = fakeRequestUtils( [
 			{ plugin: 'siteorigin-panels/siteorigin-panels', status: 'active', version: '2.37.0' },
 			{ plugin: 'so-widgets-bundle/so-widgets-bundle', status, version: 'dev' },
@@ -133,10 +133,6 @@ test( 'the guard fails when the release is running instead', async () => {
 			'found so-widgets-bundle/so-widgets-bundle (Version: 1.75.0, active)',
 		],
 		[
-			[ { plugin: 'so-widgets-bundle/so-widgets-bundle', status: 'inactive', version: 'dev' } ],
-			'found so-widgets-bundle/so-widgets-bundle (Version: dev, inactive)',
-		],
-		[
 			[ { plugin: 'feature-x/so-widgets-bundle', status: 'inactive', version: 'dev' } ],
 			'found not installed',
 		],
@@ -144,7 +140,7 @@ test( 'the guard fails when the release is running instead', async () => {
 
 	for ( const [ plugins, found ] of failures ) {
 		await assert.rejects( verifyMountedPlugin( fakeRequestUtils( plugins ), env( expected ) ), ( error ) => {
-			assert.match( error.message, /Expected so-widgets-bundle\/so-widgets-bundle \(Version: dev, active\)/ );
+			assert.match( error.message, /Expected so-widgets-bundle\/so-widgets-bundle \(Version: dev\)/ );
 			assert.ok( error.message.includes( found ), error.message );
 			return true;
 		} );
@@ -155,7 +151,19 @@ test( 'the guard fails when the plugin list cannot be read', async () => {
 	for ( const response of [ new Error( 'Not logged in' ), { code: 'rest_forbidden' } ] ) {
 		await assert.rejects(
 			verifyMountedPlugin( fakeRequestUtils( response ), env( expected ) ),
-			/so-widgets-bundle\/so-widgets-bundle \(Version: dev, active\)/
+			/so-widgets-bundle\/so-widgets-bundle \(Version: dev\)/
 		);
+	}
+} );
+
+test( 'the guard reads the mount from process.env by default', async () => {
+	process.env.SO_TESTS_MOUNTED_PLUGIN = JSON.stringify( expected );
+	try {
+		await assert.rejects(
+			verifyMountedPlugin( fakeRequestUtils( [] ) ),
+			/found not installed/
+		);
+	} finally {
+		delete process.env.SO_TESTS_MOUNTED_PLUGIN;
 	}
 } );

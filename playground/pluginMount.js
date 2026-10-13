@@ -79,7 +79,7 @@ const findPluginFile = ( dir ) => {
 
 /**
  * Describes where a plugin directory mounts in Playground, and what
- * WordPress should report for it once it's active.
+ * WordPress should report for it.
  *
  * @param {string} mountDir The directory being mounted.
  *
@@ -99,18 +99,18 @@ const describeMount = ( mountDir ) => {
 };
 
 /**
- * Fails if Playground isn't running the plugin that `startPlayground()`
- * mounted.
+ * Fails if Playground has a different copy of the plugin that
+ * `startPlayground()` mounted.
  *
  * If the mount path doesn't match the plugin's slug, the blueprint installs
  * and activates the wordpress.org release instead, and tests pass against
- * it. This compares the active plugin's Version header with the mounted
+ * it. This compares the installed plugin's Version header with the mounted
  * copy's. It can't detect a release that has the same version string, which
- * is why source headers use `dev`.
+ * is why source headers use `dev`. Activation is left to the blueprint.
  *
  * @param {Object} requestUtils Logged-in RequestUtils instance.
  * @param {Object} [env=process.env] Environment to read the mount from.
- * @throws {Error} If the mounted plugin isn't the active one.
+ * @throws {Error} If the mounted plugin isn't the installed one.
  *
  * @return {Promise<boolean>} False when `startPlayground()` didn't mount a
  *                            plugin, true when the check passed.
@@ -135,7 +135,7 @@ const verifyMountedPlugin = async ( requestUtils, env = process.env ) => {
 		throw new Error( `${ ENV_KEY } must have string "plugin" and "version" values.` );
 	}
 
-	const expectedText = `${ expected.plugin } (Version: ${ expected.version }, active)`;
+	const expectedText = `${ expected.plugin } (Version: ${ expected.version })`;
 
 	let plugins;
 	try {
@@ -149,9 +149,8 @@ const verifyMountedPlugin = async ( requestUtils, env = process.env ) => {
 	}
 
 	const entry = plugins.find( ( plugin ) => plugin.plugin === expected.plugin );
-	const isActive = entry && ( entry.status === 'active' || entry.status === 'network-active' );
 
-	if ( isActive && entry.version === expected.version ) {
+	if ( entry && entry.version === expected.version ) {
 		return true;
 	}
 

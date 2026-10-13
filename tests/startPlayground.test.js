@@ -66,13 +66,14 @@ test( 'a worktree mounts its source at the plugin slug', async () => {
 } );
 
 test( 'a build mounts the dist folder at the plugin slug', async () => {
-	const dir = makeDir( { 'dist/so-widgets-bundle/so-widgets-bundle.php': header( '2.0.0' ) } );
+	// The folder name differs from the slug, so only the main file can give the slug.
+	const dir = makeDir( { 'dist/release-build/so-widgets-bundle.php': header( '2.0.0' ) } );
 
 	await startPlayground( true );
 
 	assert.deepEqual( mountArgs( cliCalls[ 0 ] ), [
 		'--mountDirBeforeInstall',
-		path.join( dir, 'dist', 'so-widgets-bundle' ),
+		path.join( dir, 'dist', 'release-build' ),
 		'/wordpress/wp-content/plugins/so-widgets-bundle',
 	] );
 	assert.deepEqual( JSON.parse( process.env.SO_TESTS_MOUNTED_PLUGIN ), {
@@ -89,6 +90,15 @@ test( 'an external site clears a mount recorded earlier', async () => {
 	process.env.SO_TESTS_MOUNTED_PLUGIN = JSON.stringify( { plugin: 'old/old', version: '1' } );
 
 	assert.equal( await startPlayground( false ), false );
+	assert.equal( cliCalls.length, 0 );
+	assert.equal( process.env.SO_TESTS_MOUNTED_PLUGIN, undefined );
+} );
+
+test( 'a mount without a plugin file clears a mount recorded earlier', async () => {
+	makeDir( { 'index.php': '<?php\n' } );
+	process.env.SO_TESTS_MOUNTED_PLUGIN = JSON.stringify( { plugin: 'old/old', version: '1' } );
+
+	await assert.rejects( startPlayground( false ), /found: none/ );
 	assert.equal( cliCalls.length, 0 );
 	assert.equal( process.env.SO_TESTS_MOUNTED_PLUGIN, undefined );
 } );
