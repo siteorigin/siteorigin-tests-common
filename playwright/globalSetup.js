@@ -5,6 +5,7 @@
  */
 
 const { setupRequestUtils } = require('./common.js');
+const { verifyMountedPlugin } = require( '../playground/pluginMount' );
 const fs = require('fs');
 const path = require('path');
 
@@ -119,6 +120,9 @@ const globalSetup = async ( config ) => {
 	await confirmBaseUrlActive();
 
 	const requestUtils = await setupRequestUtils( config );
+
+	// Fail before any test runs against a plugin other than the one mounted.
+	await verifyMountedPlugin( requestUtils );
 
 	if ( process.env.clear_env ?? false ) {
 		await wpPrep( requestUtils );

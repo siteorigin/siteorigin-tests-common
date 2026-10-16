@@ -3,29 +3,28 @@ const path = require( 'path' );
 
 const { parseOptionsAndRunCLI } = require( '@wp-playground/cli' );
 const { getBuildDirectory } = require( '../utilities/builds' );
+const { describeMount } = require( './pluginMount' );
 
 /**
  * Generates CLI arguments to mount the current directory, or build directory.
  *
+ * The plugin mounts at its own slug, not the directory name, so a git
+ * worktree replaces the plugin the blueprint would otherwise install.
+ *
  * @param {boolean} mountBuild Whether to include build arguments.
  *
- * @return {string[]} CLI arguments for mounting the relevant directory.
+ * @return {Object} `{ args, expected }`: CLI arguments for mounting the
+ *                  relevant directory, and the plugin WordPress should report.
  */
 const addMountDirectory = ( mountBuild ) => {
-	let mountDir;
-	let vfs = '/wordpress/wp-content/plugins/';
+	const directory = mountBuild ? getBuildDirectory().path : process.cwd();
+	const mountDir = directory.replace( /\\/g, '/' );
+	const { vfsPath, expected } = describeMount( directory );
 
-	if ( mountBuild ) {
-		const buildDirectory = getBuildDirectory();
-		mountDir = buildDirectory.path.replace( /\\/g, '/' );
-		vfs += buildDirectory.name;
-	} else {
-		const currentDirectory = process.cwd();
-		mountDir = currentDirectory.replace( /\\/g, '/' );
-		vfs += path.basename( currentDirectory );
-	}
-
-	return [ '--mountDirBeforeInstall', mountDir, vfs ];
+	return {
+		args: [ '--mountDirBeforeInstall', mountDir, vfsPath ],
+		expected,
+	};
 };
 
 /**
@@ -89,17 +88,23 @@ const startPlayground = async (
 	port = 1129,
 	blueprint = 'core'
 ) => {
+	// Global setup checks the plugin recorded here, so clear any earlier one.
+	delete process.env.SO_TESTS_MOUNTED_PLUGIN;
+
 	if ( ! shouldRunPlayground() ) {
 		return false;
 	}
 
+	const mount = addMountDirectory( mountBuild );
 	const cliArgs = [
 		'server',
 		`--blueprint=${ getBlueprintPath( blueprint ) }`,
 		'--port',
 		port,
-		...addMountDirectory( mountBuild )
+		...mount.args
 	];
+
+	process.env.SO_TESTS_MOUNTED_PLUGIN = JSON.stringify( mount.expected );
 
 	const originalArgvLength = process.argv.length;
 
