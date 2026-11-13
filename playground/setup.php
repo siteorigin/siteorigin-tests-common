@@ -45,5 +45,8 @@ add_action( 'wp_loaded', function() {
 	wp_cache_delete( 'active_widgets', 'siteorigin_widgets' );
 
 	// Deactivate the plugin after running.
+	if ( ! function_exists( 'deactivate_plugins' ) ) {
+		require_once ABSPATH . 'wp-admin/includes/plugin.php';
+	}
 	deactivate_plugins( plugin_basename( __FILE__ ) );
 }, 10 );
