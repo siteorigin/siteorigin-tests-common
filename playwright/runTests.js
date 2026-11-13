@@ -13,8 +13,12 @@ const fs = require( 'fs' );
 const execAsync = require( '../utilities/execAsync' );
 const startPlayground = require( '../playground/startPlayground' );
 const { maybeMakeBuild } = require( '../utilities/builds' );
+const wordPressVersion = require( '../playground/wordPressVersion' );
 
 const runTests = async () => {
+	// Refuse a bad WordPress version before anything is built or started.
+	wordPressVersion();
+
 	const isWindows = process.platform === 'win32';
 
 	// Ensure system32 is in PATH for Windows compatibility.

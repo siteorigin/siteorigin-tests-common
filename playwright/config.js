@@ -5,6 +5,9 @@
  * via SO_TESTS_ENV_PATH). Exports a Playwright config object for
  * use in other repositories.
  *
+ * Without so-tests.env the tests run on a WordPress Playground, on the
+ * latest WordPress unless SO_TESTS_WP_VERSION names a version.
+ *
  * @see https://playwright.dev/docs/test-configuration
  */
 

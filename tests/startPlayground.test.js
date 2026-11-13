@@ -41,11 +41,13 @@ const mountArgs = ( argv ) => argv.slice( argv.indexOf( '--mountDirBeforeInstall
 beforeEach( () => {
 	cliCalls.length = 0;
 	delete process.env.SO_TESTS_MOUNTED_PLUGIN;
+	delete process.env.SO_TESTS_WP_VERSION;
 } );
 
 afterEach( () => {
 	process.chdir( originalCwd );
 	delete process.env.SO_TESTS_MOUNTED_PLUGIN;
+	delete process.env.SO_TESTS_WP_VERSION;
 } );
 
 test( 'a worktree mounts its source at the plugin slug', async () => {
@@ -101,4 +103,31 @@ test( 'a mount without a plugin file clears a mount recorded earlier', async () 
 	await assert.rejects( startPlayground( false ), /found: none/ );
 	assert.equal( cliCalls.length, 0 );
 	assert.equal( process.env.SO_TESTS_MOUNTED_PLUGIN, undefined );
+} );
+
+test( 'no WordPress version is passed unless one is asked for', async () => {
+	makeDir( { 'so-widgets-bundle.php': header( 'dev' ) } );
+
+	await startPlayground( false );
+
+	assert.equal( cliCalls.length, 1 );
+	assert.deepEqual( cliCalls[ 0 ].filter( ( arg ) => String( arg ).startsWith( '--wp' ) ), [] );
+} );
+
+test( 'SO_TESTS_WP_VERSION is passed to the Playground as --wp', async () => {
+	makeDir( { 'so-widgets-bundle.php': header( 'dev' ) } );
+	process.env.SO_TESTS_WP_VERSION = '6.6';
+
+	await startPlayground( false );
+
+	assert.equal( cliCalls.length, 1 );
+	assert.deepEqual( cliCalls[ 0 ].filter( ( arg ) => String( arg ).startsWith( '--wp' ) ), [ '--wp=6.6' ] );
+} );
+
+test( 'a value that is not a version stops the start', async () => {
+	makeDir( { 'so-widgets-bundle.php': header( 'dev' ) } );
+	process.env.SO_TESTS_WP_VERSION = '6.6; rm -rf';
+
+	await assert.rejects( startPlayground( false ), /SO_TESTS_WP_VERSION/ );
+	assert.equal( cliCalls.length, 0 );
 } );
