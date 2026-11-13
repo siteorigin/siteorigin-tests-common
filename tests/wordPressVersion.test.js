@@ -1,7 +1,11 @@
-const { test, afterEach } = require( 'node:test' );
+const { test, beforeEach, afterEach } = require( 'node:test' );
 const assert = require( 'node:assert/strict' );
 
 const wordPressVersion = require( '../playground/wordPressVersion' );
+
+beforeEach( () => {
+	delete process.env.SO_TESTS_WP_VERSION;
+} );
 
 afterEach( () => {
 	delete process.env.SO_TESTS_WP_VERSION;
