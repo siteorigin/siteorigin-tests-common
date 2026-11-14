@@ -5,6 +5,10 @@
  * via SO_TESTS_ENV_PATH). Exports a Playwright config object for
  * use in other repositories.
  *
+ * Without so-tests.env, the runner (runTests.js) starts a WordPress
+ * Playground for the tests, on the latest WordPress unless
+ * SO_TESTS_WP_VERSION names a version. This config starts no server.
+ *
  * @see https://playwright.dev/docs/test-configuration
  */
 

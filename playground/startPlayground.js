@@ -4,6 +4,7 @@ const path = require( 'path' );
 const { parseOptionsAndRunCLI } = require( '@wp-playground/cli' );
 const { getBuildDirectory } = require( '../utilities/builds' );
 const { describeMount } = require( './pluginMount' );
+const wordPressVersion = require( './wordPressVersion' );
 
 /**
  * Generates CLI arguments to mount the current directory, or build directory.
@@ -80,7 +81,10 @@ const shouldRunPlayground = () => {
  * @param {string} [blueprint='core'] The name of the blueprint to use
  *                                   (without the `.json` extension).
  *
- * @throws {Error} If the blueprint name is invalid or the server fails to start.
+ * The WordPress version is the latest unless `SO_TESTS_WP_VERSION` names one.
+ *
+ * @throws {Error} If the blueprint name or the WordPress version is invalid,
+ *                 or the server fails to start.
  * @return {Promise<void>} Resolves when the server starts successfully.
  */
 const startPlayground = async (
@@ -90,6 +94,8 @@ const startPlayground = async (
 ) => {
 	// Global setup checks the plugin recorded here, so clear any earlier one.
 	delete process.env.SO_TESTS_MOUNTED_PLUGIN;
+
+	const version = wordPressVersion();
 
 	if ( ! shouldRunPlayground() ) {
 		return false;
@@ -103,6 +109,10 @@ const startPlayground = async (
 		port,
 		...mount.args
 	];
+
+	if ( version ) {
+		cliArgs.push( `--wp=${ version }` );
+	}
 
 	process.env.SO_TESTS_MOUNTED_PLUGIN = JSON.stringify( mount.expected );
 
