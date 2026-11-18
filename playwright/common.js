@@ -304,11 +304,19 @@ const neutralizeSiteEditorStickyHeader = async ( admin ) => {
  * @returns {Promise<Locator>} The Playwright locator for the widget container.
  */
 const addBlock = async( admin, blockName, offset, isWb = true ) => {
-	await admin.editor.insertBlock( { name: blockName } );
-	if ( isWb ) {
-		// WB Forms require a server side request before they're rendered.
-		await waitForRequestToFinish( admin.page, '/wp-json/sowb/v1/widgets/forms', 20000 );
+	// WB Forms require a server side request before they're rendered. Start
+	// listening before the block is inserted, so a fast response isn't missed.
+	const formRequest = isWb ?
+		waitForRequestToFinish( admin.page, '/wp-json/sowb/v1/widgets/forms', 20000 ) :
+		null;
+
+	// If inserting fails, its error is the one to report.
+	if ( formRequest ) {
+		formRequest.catch( () => {} );
 	}
+
+	await admin.editor.insertBlock( { name: blockName } );
+	await formRequest;
 
 	const widget = admin.editor.canvas.locator( `.wp-block[data-type="${ blockName }"]` );
 
